@@ -1,14 +1,87 @@
-### Welcome to GitHub Pages.
-This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here [using GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/), select a template crafted by a designer, and publish. After your page is generated, you can check out the new `gh-pages` branch locally. If you’re using GitHub Desktop, simply sync your repository and you’ll see the new branch.
+---
+---
 
-### Designer Templates
-We’ve crafted some handsome templates for you to use. Go ahead and click 'Continue to layouts' to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved.
+# Software products, engineered from architecture to release.
 
-### Creating pages manually
-If you prefer to not use the automatic generator, push a branch named `gh-pages` to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.
+C++ / Linux / GitHub / AI-assisted engineering を中心に、ソフトウェアプロダクト開発、技術設計、開発基盤づくりを支援しています。
 
-### Authors and Contributors
-You can @mention a GitHub username to generate a link to their profile. The resulting `<a>` element will link to the contributor’s GitHub Profile. For example: In 2007, Chris Wanstrath (@defunkt), PJ Hyett (@pjhyett), and Tom Preston-Werner (@mojombo) founded GitHub.
+## Product-minded software engineering — from architecture decisions to working software.
 
-### Support or Contact
-Having trouble with Pages? Check out our [documentation](https://help.github.com/pages) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+技術選定、設計、実装、開発基盤、CI、ドキュメント、リリースまで。
+ソフトウェアプロダクトを作り切るための技術支援、技術設計、開発基盤づくり、そして変更に強いソフトウェアプロダクトづくりを支援します。
+
+---
+
+## What I do
+
+- **Software Product Development** - robust products, built end-to-end.
+  変更に強いソフトウェアプロダクトを作り切るための技術支援、技術設計、開発基盤づくりを支援。
+
+- **Developer Tools & Automation** - tools and automation to boost productivity.
+  開発の生産性を上げる道具と自動化の設計・開発・運用。
+
+- **Architecture Review** - a second pair of eyes to check your architecture.
+  技術選定や設計の妥当性を第三者の目で点検し、リスクや改善案を示す。
+
+- **AI-assisted Engineering Workflow** - making AI-driven development reliable and maintainable.
+  AI を使った開発を「任せても崩れない運用」に整える。
+
+---
+
+## Products / Labs
+
+- [scrap](https://github.com/skipbit/scrap) — C++ build/task runner and package manager
+- [dross](https://github.com/skipbit/dross) — C++ general-purpose library
+- [slipway](https://github.com/skipbit/slipway) — AI-first SaaS boilerplate
+
+---
+
+## Services
+
+### 1. Product Engineering Sprint
+
+Turn an idea or spec into working software (prototype, MVP slice, technical spike). Scope, deliverables, and timeline are agreed upon before starting.
+
+アイデアや要件を動くソフトウェア（プロトタイプ、MVP スライス、技術的スパイク）に変える短期スプリント。着手前にスコープ・成果物・期間を合意。
+
+### 2. Architecture Review
+
+A second-opinion review of an existing design/codebase. Identify risks and propose improvements.
+
+既存の設計・コードベースを、第三者の目で点検。リスクを洗い出し、改善案を提案。
+
+### 3. Engineering Workflow Design
+
+Make AI-assisted development reliable and maintainable. Design the workflow, record decisions (ADR), hand off state, and introduce review lines.
+
+AI コーディングの運用設計（ワークフロー設計）。運用ルールを設計し、意思決定を記録(ADR)、状態を引き継ぎ、レビューラインを導入。
+
+---
+
+## Notes
+
+Engineering notes on software product development, architecture, and AI-assisted coding workflow.
+
+技術設計、AI コーディングの運用設計、開発プロセスに関するメモ
+
+---
+
+## About
+
+Software architect / Product developer.
+C++ / Linux / GitHub / AI-assisted engineering. I support software product development from architecture to implementation, and help teams establish reliable development processes.
+
+Experience in regulated / high-reliability software domains. I value building software that is supported by documentation and testing, especially for systems that must not fail.
+
+ソフトウェアアーキテクト / プロダクト開発者
+C++ / Linux / GitHub / AI-assisted engineering を中心に、設計から実装、開発プロセス整備まで扱います。
+
+regulated / high-reliability なソフトウェア領域での実務経験があります。壊れたら困るものを、記録と検証で支える作り方を大事にしています。
+
+---
+
+## Contact
+
+- [X](https://x.com/skipbitjp)
+- [GitHub](https://github.com/skipbit)
+- [Zenn](https://zenn.dev/skipbit)

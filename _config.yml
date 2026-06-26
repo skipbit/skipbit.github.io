@@ -1,7 +1,7 @@
-title: SKIPBIT
-description: Managed by Yuma Endo
-google_analytics: 
-show_downloads: true
+title: skipbit
+description: Product-minded software engineering — from architecture to working software.
+google_analytics:
+show_downloads: false
 theme: jekyll-theme-cayman
 
 gems:

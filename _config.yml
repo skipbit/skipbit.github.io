@@ -1,8 +1,0 @@
-title: skipbit
-description: Product-minded software engineering — from architecture to working software.
-google_analytics:
-show_downloads: false
-theme: jekyll-theme-cayman
-
-gems:
-  - jekyll-mentions

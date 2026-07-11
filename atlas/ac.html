@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge Atlas — 価値検証キット(A ChatGPT / C まとめプリント)</title>
+<style>
+  :root{
+    --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Songti SC",serif;
+    --sans:"Hiragino Kaku Gothic ProN","Yu Gothic","YuGothic","Noto Sans JP","Hiragino Sans",system-ui,sans-serif;
+
+    --bg:#e7e5db; --surface:#f3f1ea; --surface-2:#fbfaf4;
+    --ink:#232630; --ink-soft:#5b5f6a; --line:#d0cdc1;
+    --jp:#2a4a7f; --jp-soft:rgba(42,74,127,.12); --jp-bd:rgba(42,74,127,.30);
+    --cn:#2c6d61; --cn-soft:rgba(44,109,97,.12); --cn-bd:rgba(44,109,97,.30);
+    --eu:#7a5ea8; --eu-soft:rgba(122,94,168,.12); --eu-bd:rgba(122,94,168,.30);
+    --accent:#c24634; --accent-soft:rgba(194,70,52,.13);
+    --focus:#c24634; --r:10px;
+    --avatar:#2c6d61;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#15171d; --surface:#1e212a; --surface-2:#252935;
+      --ink:#e9e7df; --ink-soft:#9aa0ac; --line:#333844;
+      --jp:#82abe8; --jp-soft:rgba(130,171,232,.16); --jp-bd:rgba(130,171,232,.34);
+      --cn:#5fbaa8; --cn-soft:rgba(95,186,168,.16); --cn-bd:rgba(95,186,168,.34);
+      --eu:#b49bdd; --eu-soft:rgba(180,155,221,.16); --eu-bd:rgba(180,155,221,.34);
+      --accent:#e2664f; --accent-soft:rgba(226,102,79,.18);
+      --focus:#e2664f;
+      --avatar:#2f8f79;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#e7e5db; --surface:#f3f1ea; --surface-2:#fbfaf4;
+    --ink:#232630; --ink-soft:#5b5f6a; --line:#d0cdc1;
+    --jp:#2a4a7f; --jp-soft:rgba(42,74,127,.12); --jp-bd:rgba(42,74,127,.30);
+    --cn:#2c6d61; --cn-soft:rgba(44,109,97,.12); --cn-bd:rgba(44,109,97,.30);
+    --eu:#7a5ea8; --eu-soft:rgba(122,94,168,.12); --eu-bd:rgba(122,94,168,.30);
+    --accent:#c24634; --accent-soft:rgba(194,70,52,.13);
+    --focus:#c24634; --avatar:#2c6d61;
+  }
+  :root[data-theme="dark"]{
+    --bg:#15171d; --surface:#1e212a; --surface-2:#252935;
+    --ink:#e9e7df; --ink-soft:#9aa0ac; --line:#333844;
+    --jp:#82abe8; --jp-soft:rgba(130,171,232,.16); --jp-bd:rgba(130,171,232,.34);
+    --cn:#5fbaa8; --cn-soft:rgba(95,186,168,.16); --cn-bd:rgba(95,186,168,.34);
+    --eu:#b49bdd; --eu-soft:rgba(180,155,221,.16); --eu-bd:rgba(180,155,221,.34);
+    --accent:#e2664f; --accent-soft:rgba(226,102,79,.18);
+    --focus:#e2664f; --avatar:#2f8f79;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; width:100%; overflow-x:hidden; }
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--sans);
+    line-height:1.6; -webkit-font-smoothing:antialiased; font-feature-settings:"palt";
+  }
+  .wrap{ max-width:1000px; margin:0 auto; padding:20px 16px 40px; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+
+  /* ---- facilitator strip ---- */
+  .facil{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+    padding:11px 13px; margin-bottom:8px; background:var(--surface);
+    border:1px solid var(--line); border-radius:var(--r);
+  }
+  .facil .brand{ font-family:var(--serif); font-weight:600; letter-spacing:.02em; font-size:15px; }
+  .facil .brand b{ color:var(--accent); }
+  .seg{ display:flex; gap:4px; background:var(--bg); border:1px solid var(--line); border-radius:9px; padding:3px; }
+  .seg button{
+    font-family:var(--sans); font-size:13px; color:var(--ink-soft); background:transparent; border:0;
+    padding:8px 14px; border-radius:6px; cursor:pointer; white-space:nowrap;
+  }
+  .seg button[aria-selected="true"]{
+    background:var(--surface-2); color:var(--ink); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.08);
+  }
+  .seg button:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .facil .spacer{ margin-left:auto; }
+  .themebtn{
+    font-family:var(--sans); font-size:12px; color:var(--ink); background:var(--surface-2);
+    border:1px solid var(--line); border-radius:999px; padding:7px 12px; cursor:pointer; line-height:1;
+  }
+  .themebtn:hover{ border-color:var(--ink-soft); }
+  .themebtn:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .facil-note{ font-size:12px; color:var(--ink-soft); margin:0 2px 16px; }
+  .facil-note b{ color:var(--ink); }
+
+  .panel{ display:none; }
+  .panel.on{ display:block; }
+  @media (prefers-reduced-motion:no-preference){
+    .panel.on{ animation:fade .3s ease both; }
+    @keyframes fade{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+  }
+
+  /* ======================= A : ChatGPT ======================= */
+  .gpt-lead{ font-size:12.5px; color:var(--ink-soft); margin:0 2px 12px; }
+  .chat{
+    max-width:780px; margin:0 auto; background:var(--surface);
+    border:1px solid var(--line); border-radius:14px; overflow:hidden;
+  }
+  .chat .bar{
+    display:flex; align-items:center; gap:10px; padding:12px 16px;
+    border-bottom:1px solid var(--line); background:var(--surface-2);
+  }
+  .chat .av{
+    width:26px; height:26px; border-radius:6px; background:var(--avatar); color:#fff;
+    display:grid; place-items:center; font-size:11px; font-weight:700; letter-spacing:.02em;
+  }
+  .chat .who{ font-size:13px; color:var(--ink-soft); }
+  .msg{ padding:16px 18px; }
+  .msg.u{ border-bottom:1px solid var(--line); }
+  .msg.u .txt{
+    background:var(--jp-soft); display:inline-block; padding:9px 13px;
+    border-radius:10px; font-size:14px; line-height:1.55;
+  }
+  .msg .txt p{ margin:0 0 11px; }
+  .msg .txt p:last-child{ margin-bottom:0; }
+  .tbl-scroll{ overflow-x:auto; margin:6px 0 12px; }
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+  table.cmp th, table.cmp td{ border:1px solid var(--line); padding:7px 9px; vertical-align:top; text-align:left; }
+  table.cmp thead th{ background:var(--surface-2); font-weight:600; }
+  table.cmp td:first-child, table.cmp th:first-child{ white-space:nowrap; color:var(--ink-soft); font-weight:600; }
+  table.cmp b{ font-weight:600; }
+  .msg .small{ font-size:11.5px; color:var(--ink-soft); }
+
+  /* ======================= C : print sheet ======================= */
+  .sheet{
+    max-width:840px; margin:0 auto; background:var(--surface-2);
+    border:1px solid var(--line); border-radius:10px;
+    padding:28px 32px 30px; box-shadow:0 1px 12px rgba(0,0,0,.07);
+  }
+  .sheet .doc-kicker{ font-size:11px; letter-spacing:.18em; color:var(--ink-soft); text-transform:uppercase; }
+  .sheet h2{
+    font-family:var(--serif); font-size:21px; font-weight:600; letter-spacing:.01em;
+    margin:4px 0 4px; padding-bottom:9px; border-bottom:3px double var(--jp);
+  }
+  .sheet .doc-sub{ font-size:12.5px; color:var(--ink-soft); margin:0 0 6px; }
+  .sheet h3{
+    font-family:var(--sans); font-size:14px; font-weight:600; color:var(--ink);
+    margin:20px 0 8px; padding-left:9px; border-left:4px solid var(--accent);
+  }
+  .sh-scroll{ overflow-x:auto; }
+  table.sh{ width:100%; border-collapse:collapse; font-size:13px; min-width:600px; }
+  table.sh th, table.sh td{ border:1px solid var(--line); padding:8px 10px; vertical-align:top; text-align:left; }
+  table.sh thead th{ font-family:var(--sans); font-weight:600; text-align:center; }
+  table.sh .col-era{ white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--ink-soft); font-weight:600; width:88px; }
+  table.sh thead .h-jp{ background:var(--jp-soft); color:var(--jp); }
+  table.sh thead .h-cn{ background:var(--cn-soft); color:var(--cn); }
+  table.sh thead .h-eu{ background:var(--eu-soft); color:var(--eu); }
+  table.sh td.jp{ border-left:3px solid var(--jp-bd); }
+  table.sh td.cn{ border-left:3px solid var(--cn-bd); }
+  table.sh td.eu{ border-left:3px solid var(--eu-bd); }
+  table.sh .era{ font-family:var(--serif); font-weight:600; font-size:13.5px; display:block; }
+  table.sh .rep{ display:block; font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  table.sh .rep .pin{ color:var(--accent); font-weight:600; }
+
+  .flows{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px; }
+  .flow{ border:1px solid var(--line); border-radius:9px; padding:11px 13px; background:var(--surface); }
+  .flow.jp{ border-top:3px solid var(--jp); }
+  .flow.cn{ border-top:3px solid var(--cn); }
+  .flow.eu{ border-top:3px solid var(--eu); }
+  .flow .fh{ font-family:var(--serif); font-weight:600; font-size:14px; }
+  .flow.jp .fh{ color:var(--jp); } .flow.cn .fh{ color:var(--cn); } .flow.eu .fh{ color:var(--eu); }
+  .flow .fl{ font-size:13px; margin-top:4px; line-height:1.5; }
+  .flow .fl b{ color:var(--ink); }
+
+  .terms{ margin:6px 0 0; padding-left:20px; }
+  .terms li{ font-size:13px; margin:4px 0; }
+  .terms b{ color:var(--jp); }
+
+  .oneliner{
+    background:var(--accent-soft); border-left:4px solid var(--accent);
+    padding:11px 15px; border-radius:0 8px 8px 0; font-size:13.5px; margin-top:16px; line-height:1.6;
+  }
+  .oneliner b{ color:var(--ink); }
+
+  /* ---- footer ---- */
+  .foot{
+    margin-top:22px; padding:14px 16px; border-radius:12px;
+    background:var(--surface); border:1px dashed var(--line);
+    font-size:12.5px; color:var(--ink-soft); line-height:1.8;
+  }
+  .foot b{ color:var(--ink); }
+  .foot .qa{ color:var(--accent); font-weight:600; }
+
+  @media (max-width:720px){
+    .flows{ grid-template-columns:1fr; }
+    .sheet{ padding:22px 18px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="facil">
+    <span class="brand">Knowledge&nbsp;Atlas <b>·</b> 価値検証キット</span>
+    <div class="seg" role="tablist" aria-label="被験者に見せる案">
+      <button role="tab" id="tab-gpt" aria-selected="true" aria-controls="p-gpt" data-tab="gpt">① ChatGPTの回答</button>
+      <button role="tab" id="tab-sheet" aria-selected="false" aria-controls="p-sheet" data-tab="sheet">② まとめプリント</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="themebtn" id="themeBtn" type="button" aria-label="表示テーマを切り替え">◐ テーマ: 自動</button>
+  </div>
+  <p class="facil-note">進行役: <b>1つずつ</b>見せ、<b>提示順は人ごとに変える</b>(この2案 A/C に加え、B「動くアトラス」は別ファイル atlas-civ.html で見せる)。</p>
+
+  <!-- ==================== A : ChatGPT ==================== -->
+  <section class="panel on" id="p-gpt" role="tabpanel" aria-labelledby="tab-gpt">
+    <p class="gpt-lead">無料の生成AIに「世界史の対応表を作って」と頼んだ回答(例)。フェアに"良い回答"を置いています。</p>
+    <div class="chat">
+      <div class="bar"><span class="av">AI</span><span class="who">生成AIの回答</span></div>
+      <div class="msg u"><span class="txt">世界史の全体像がつかめません。日本・中国・ヨーロッパで同じ時代に何が起きていたか、対応が分かる表にしてください。</span></div>
+      <div class="msg">
+        <div class="txt">
+          <p>世界史は「同じ時代に、それぞれの地域で何が起きていたか」を横に並べると全体像がつかみやすくなります。日本・中国・ヨーロッパの主な時代を対応させると、次のとおりです。</p>
+          <div class="tbl-scroll">
+            <table class="cmp">
+              <thead><tr><th>年代</th><th>日本</th><th>中国</th><th>ヨーロッパ</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>前5世紀頃</td>
+                  <td><b>弥生時代</b> ― 稲作が広まり小国が分立</td>
+                  <td><b>春秋戦国</b> ― 孔子ら諸子百家が現れる</td>
+                  <td><b>古代ギリシャ</b> ― ポリス(都市国家)、ソクラテス</td>
+                </tr>
+                <tr>
+                  <td>紀元前後</td>
+                  <td><b>弥生時代</b> ― 倭の小国が漢へ朝貢</td>
+                  <td><b>漢</b> ― 儒教を重んじる国家、シルクロード、武帝</td>
+                  <td><b>ローマ帝国</b> ― 地中海世界を統一、アウグストゥス</td>
+                </tr>
+                <tr>
+                  <td>4〜5世紀</td>
+                  <td><b>古墳時代</b> ― 大和政権、前方後円墳</td>
+                  <td><b>三国〜南北朝</b> ― 分裂の時代、諸葛亮</td>
+                  <td><b>ローマ帝国の衰退</b> ― 西ローマ帝国の滅亡(476)</td>
+                </tr>
+                <tr>
+                  <td>7〜8世紀</td>
+                  <td><b>飛鳥・奈良時代</b> ― 律令国家、仏教、聖徳太子</td>
+                  <td><b>隋唐</b> ― 長安の繁栄、太宗</td>
+                  <td><b>フランク王国</b> ― 中世前期、カール大帝</td>
+                </tr>
+                <tr>
+                  <td>11〜12世紀</td>
+                  <td><b>平安末〜鎌倉</b> ― 武家政権のはじまり、源頼朝</td>
+                  <td><b>宋</b> ― 経済と文化の隆盛、王安石</td>
+                  <td><b>中世盛期</b> ― 十字軍、大学の誕生</td>
+                </tr>
+                <tr>
+                  <td>15〜16世紀</td>
+                  <td><b>室町・戦国</b> ― 下剋上、織田信長</td>
+                  <td><b>明</b> ― 鄭和の遠征、北虜南倭、戚継光</td>
+                  <td><b>ルネサンス・大航海</b> ― レオナルド・ダ・ヴィンチ</td>
+                </tr>
+                <tr>
+                  <td>17〜18世紀</td>
+                  <td><b>江戸</b> ― 泰平・鎖国、徳川家康</td>
+                  <td><b>清</b> ― 最盛期、康熙帝</td>
+                  <td><b>絶対王政・科学革命</b> ― ルイ14世</td>
+                </tr>
+                <tr>
+                  <td>19世紀</td>
+                  <td><b>幕末→明治</b> ― 近代化、伊藤博文</td>
+                  <td><b>清</b> ― アヘン戦争、衰退</td>
+                  <td><b>産業革命・帝国主義</b></td>
+                </tr>
+                <tr>
+                  <td>20世紀</td>
+                  <td><b>昭和</b> ― 第二次世界大戦</td>
+                  <td><b>中華民国</b> ― 日中戦争、毛沢東</td>
+                  <td><b>二度の大戦</b> ― チャーチル</td>
+                </tr>
+                <tr>
+                  <td>現代</td>
+                  <td><b>平成・令和</b></td>
+                  <td><b>改革開放・大国化</b></td>
+                  <td><b>EU・統合</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>まとめ</strong>: 大きな流れとして、日本は「小国の分立 → 統一国家 → 近代化」へ進み、中国は「統一帝国の興亡」を繰り返し、ヨーロッパは「ローマ帝国 → 分裂した中世 → 近代の国民国家群」へと移りました。同じ時期でも、統一へ向かう地域と分裂する地域が入れ替わっていた点に注目すると、地域どうしのつながりが見えてきます。</p>
+          <p class="small">※年代区分や人物には諸説あるものもあります。詳しくは各項目を個別にご確認ください。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== C : print sheet ==================== -->
+  <section class="panel" id="p-sheet" role="tabpanel" aria-labelledby="tab-sheet">
+    <div class="sheet">
+      <div class="doc-kicker">テスト前整理プリント</div>
+      <h2>【文明の同時代対応年表】日本・中国・ヨーロッパ ― 紀元前〜現代</h2>
+      <p class="doc-sub">同じ時代に、3つの地域でそれぞれ誰が・何をしていたかを横に並べたもの。<span style="color:var(--jp)">■日本</span> <span style="color:var(--cn)">■中国</span> <span style="color:var(--eu)">■ヨーロッパ</span></p>
+
+      <h3>対応表(同じ頃に何が起きていたか)</h3>
+      <div class="sh-scroll">
+        <table class="sh">
+          <thead>
+            <tr><th class="col-era">年代</th><th class="h-jp">日本</th><th class="h-cn">中国</th><th class="h-eu">ヨーロッパ</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-era">前5世紀頃</td>
+              <td class="jp"><span class="era">弥生時代</span><span class="rep">稲作・小国分立</span></td>
+              <td class="cn"><span class="era">春秋戦国</span><span class="rep"><span class="pin">孔子</span>・諸子百家</span></td>
+              <td class="eu"><span class="era">古代ギリシャ</span><span class="rep">ポリス・<span class="pin">ソクラテス</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">紀元前後</td>
+              <td class="jp"><span class="era">弥生時代</span><span class="rep">倭の小国・漢へ朝貢</span></td>
+              <td class="cn"><span class="era">漢</span><span class="rep">儒教国家・シルクロード・<span class="pin">武帝</span></span></td>
+              <td class="eu"><span class="era">ローマ帝国</span><span class="rep">地中海統一・<span class="pin">アウグストゥス</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">4〜5世紀</td>
+              <td class="jp"><span class="era">古墳時代</span><span class="rep">大和政権・前方後円墳</span></td>
+              <td class="cn"><span class="era">三国〜南北朝</span><span class="rep">分裂・<span class="pin">諸葛亮</span></span></td>
+              <td class="eu"><span class="era">ローマ帝国の衰退</span><span class="rep"><span class="pin">西ローマ滅亡(476)</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">7〜8世紀</td>
+              <td class="jp"><span class="era">飛鳥・奈良</span><span class="rep">律令国家・仏教・<span class="pin">聖徳太子</span></span></td>
+              <td class="cn"><span class="era">隋唐</span><span class="rep">長安の繁栄・<span class="pin">太宗</span></span></td>
+              <td class="eu"><span class="era">フランク王国</span><span class="rep">中世前期・<span class="pin">カール大帝</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">11〜12世紀</td>
+              <td class="jp"><span class="era">平安末〜鎌倉</span><span class="rep">武家政権・<span class="pin">源頼朝</span></span></td>
+              <td class="cn"><span class="era">宋</span><span class="rep">経済と文化の隆盛・<span class="pin">王安石</span></span></td>
+              <td class="eu"><span class="era">中世盛期</span><span class="rep"><span class="pin">十字軍</span>・大学の誕生</span></td>
+            </tr>
+            <tr>
+              <td class="col-era">15〜16世紀</td>
+              <td class="jp"><span class="era">室町・戦国</span><span class="rep">下剋上・<span class="pin">織田信長</span></span></td>
+              <td class="cn"><span class="era">明</span><span class="rep">鄭和・北虜南倭・<span class="pin">戚継光</span></span></td>
+              <td class="eu"><span class="era">ルネサンス・大航海</span><span class="rep"><span class="pin">ダ・ヴィンチ</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">17〜18世紀</td>
+              <td class="jp"><span class="era">江戸</span><span class="rep">泰平・鎖国・<span class="pin">徳川家康</span></span></td>
+              <td class="cn"><span class="era">清</span><span class="rep">最盛期・<span class="pin">康熙帝</span></span></td>
+              <td class="eu"><span class="era">絶対王政・科学革命</span><span class="rep"><span class="pin">ルイ14世</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">19世紀</td>
+              <td class="jp"><span class="era">幕末→明治</span><span class="rep">近代化・<span class="pin">伊藤博文</span></span></td>
+              <td class="cn"><span class="era">清</span><span class="rep"><span class="pin">アヘン戦争</span>・衰退</span></td>
+              <td class="eu"><span class="era">産業革命・帝国主義</span><span class="rep">工業化が世界に先行</span></td>
+            </tr>
+            <tr>
+              <td class="col-era">20世紀</td>
+              <td class="jp"><span class="era">昭和</span><span class="rep"><span class="pin">第二次世界大戦</span></span></td>
+              <td class="cn"><span class="era">中華民国</span><span class="rep">日中戦争・<span class="pin">毛沢東</span></span></td>
+              <td class="eu"><span class="era">二度の大戦</span><span class="rep"><span class="pin">チャーチル</span></span></td>
+            </tr>
+            <tr>
+              <td class="col-era">現代</td>
+              <td class="jp"><span class="era">平成・令和</span><span class="rep">情報化・低成長</span></td>
+              <td class="cn"><span class="era">改革開放</span><span class="rep">大国化</span></td>
+              <td class="eu"><span class="era">EU・統合</span><span class="rep">国家をこえた協調</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3つの流れ(一言でつかむ)</h3>
+      <div class="flows">
+        <div class="flow jp"><div class="fh">日本</div><div class="fl">分立 → <b>統一国家</b> → 近代国家</div></div>
+        <div class="flow cn"><div class="fh">中国</div><div class="fl"><b>統一帝国</b>の興亡の反復</div></div>
+        <div class="flow eu"><div class="fh">ヨーロッパ</div><div class="fl">ローマ → 分裂 → <b>近代国家群</b></div></div>
+      </div>
+
+      <h3>重要用語(一言で)</h3>
+      <ul class="terms">
+        <li><b>律令国家</b>: 中国由来の律令(法体系)を取り入れた古代日本の統治のしくみ。飛鳥・奈良期。</li>
+        <li><b>シルクロード</b>: ユーラシアを東西につないだ交易路。漢と西方を結んだ。</li>
+        <li><b>ルネサンス</b>: 古代ギリシャ・ローマの文芸を復興した文化運動。大航海時代と重なる。</li>
+        <li><b>下剋上</b>: 身分が下の者が実力で上の者を倒す風潮。戦国時代の基調。</li>
+        <li><b>産業革命</b>: 機械と工場による生産の革新。19世紀のヨーロッパが世界に先行した。</li>
+      </ul>
+
+      <div class="oneliner"><b>一言</b>: 同じ時間の中で、<b>統一へ向かう地域</b>と<b>分裂する地域</b>が入れ替わりながら進んできた。日本が「バラバラ→ひとつ」へ向かうとき、中国は大帝国が興亡を繰り返し、ヨーロッパはローマの一体からいくつもの国へと分かれていった。</div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <b>見比べる観点</b>: A(ChatGPTの回答)と C(まとめプリント)、そして B(動くアトラス <b>atlas-civ.html</b>)を並べて ――
+    <span class="qa">どれが「全体像・つながり」を掴める?</span>
+    <span class="qa">どれになら払う?</span>
+    <span class="qa">ChatGPTで十分?</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---- tabs (A / C) ---- */
+  var tabs=document.querySelectorAll('.seg button');
+  var panels={ gpt:document.getElementById('p-gpt'), sheet:document.getElementById('p-sheet') };
+  function selectTab(btn){
+    tabs.forEach(function(x){ x.setAttribute('aria-selected','false'); });
+    btn.setAttribute('aria-selected','true');
+    Object.keys(panels).forEach(function(k){ panels[k].classList.toggle('on', k===btn.dataset.tab); });
+  }
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){ selectTab(btn); });
+    btn.addEventListener('keydown', function(ev){
+      if(ev.key==='ArrowLeft' || ev.key==='ArrowRight'){
+        ev.preventDefault();
+        var arr=[].slice.call(tabs);
+        var i=arr.indexOf(btn);
+        var next=arr[(i + (ev.key==='ArrowRight'?1:arr.length-1)) % arr.length];
+        selectTab(next); next.focus();
+      }
+    });
+  });
+
+  /* ---- theme toggle (auto -> light -> dark -> auto) ---- */
+  var themeBtn=document.getElementById('themeBtn');
+  var themeState=0, THEMES=[null,'light','dark'], LABELS=['自動','ライト','ダーク'];
+  themeBtn.addEventListener('click', function(){
+    themeState=(themeState+1)%3;
+    var t=THEMES[themeState];
+    if(t) document.documentElement.setAttribute('data-theme',t);
+    else document.documentElement.removeAttribute('data-theme');
+    themeBtn.textContent='◐ テーマ: '+LABELS[themeState];
+  });
+})();
+</script>
+</body>
+</html>

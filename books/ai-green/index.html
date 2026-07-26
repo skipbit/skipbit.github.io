@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-55VVYDVZN2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-55VVYDVZN2');
+</script>
+<title>AIの緑を疑う(仮) — 実装・テスト・検証をAIが書く時代の「独立した正解」の残し方</title>
+<meta name="description" content="「テストが緑」と「仕様が守られている」は別。実装・テスト・検証をAIが担うとき、何を実装から独立した正解として残すか。買い切り技術書(制作中)の目次と無料先行章。">
+<meta property="og:type" content="book">
+<meta property="og:title" content="AIの緑を疑う(仮)">
+<meta property="og:description" content="実装・テスト・検証をAIが担うとき、何を実装から独立した正解として残すか。">
+<meta property="og:url" content="https://skipbit.github.io/books/ai-green/">
+<meta property="og:image" content="https://skipbit.github.io/books/ai-green/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="テストが緑 ≠ 仕様が守られている">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://skipbit.github.io/books/ai-green/ogp.png">
+<meta name="theme-color" content="#0b0f14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f14;
+    --surface:#10151c;
+    --surface-2:#141b24;
+    --border:rgba(255,255,255,.09);
+    --border-strong:rgba(255,255,255,.16);
+    --text:#e7edf4;
+    --muted:#94a3b4;
+    --faint:#6b7888;
+    --accent:#7c83ff;
+    --accent-2:#34d6c0;
+    --radius:14px;
+    --maxw:1060px;
+    --readw:760px;
+    --sans:"Inter","Noto Sans JP",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:var(--sans);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;letter-spacing:.1px;
+    background-image:
+      radial-gradient(900px 500px at 80% -10%, rgba(124,131,255,.14), transparent 60%),
+      radial-gradient(700px 500px at -10% 10%, rgba(52,214,192,.08), transparent 55%);
+    background-attachment:fixed;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono)}
+
+  /* top bar */
+  header.bar{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);
+    background:rgba(11,15,20,.72);border-bottom:1px solid var(--border)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{font-family:var(--mono);font-weight:600;letter-spacing:.02em;font-size:16px}
+  .brand b{color:var(--accent)}
+  .bar nav{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+  .bar nav a:hover{color:var(--text)}
+  @media(max-width:680px){.bar nav{display:none}}
+
+  /* hero */
+  .hero{padding:84px 0 48px}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.04em;color:var(--accent-2);text-transform:none;margin:0 0 18px}
+  .hero h1{font-size:clamp(32px,6vw,58px);line-height:1.06;letter-spacing:-.02em;font-weight:800;margin:0}
+  .hero h1 .wip{font-size:.42em;font-weight:600;color:var(--faint);vertical-align:middle;margin-left:.5em;letter-spacing:.02em}
+  .hero .subhead{font-size:clamp(16px,2.5vw,21px);color:var(--text);font-weight:600;margin:20px 0 0;letter-spacing:-.01em;line-height:1.5}
+  .hero p.jp{color:var(--muted);margin:16px 0 0;font-size:16px;max-width:640px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:11px 18px;border-radius:11px;font-size:14.5px;font-weight:600;border:1px solid var(--border-strong);transition:.16s;cursor:pointer;font-family:inherit}
+  .btn .arw{color:var(--accent)}
+  .btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#0b0f14}
+  .btn.primary .arw{color:#0b0f14}
+  .btn.primary:hover{filter:brightness(1.08)}
+
+  /* pipeline strip */
+  .pipe{margin-top:42px;border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(180deg,var(--surface),rgba(16,21,28,.4));padding:16px 18px;font-family:var(--mono);font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .pipe .dot{width:9px;height:9px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 0 4px rgba(52,214,192,.14)}
+  .pipe b{color:var(--text);font-weight:500}
+  .pipe .arw{color:var(--faint)}
+
+  /* sections */
+  section{padding:56px 0;border-top:1px solid var(--border);scroll-margin-top:72px}
+  .sh{font-family:var(--mono);font-size:clamp(18px,2.6vw,23px);font-weight:500;letter-spacing:.01em;margin:0 0 22px;color:var(--text)}
+  .sh .k{color:var(--accent);margin-right:10px}
+  .lede{color:var(--muted);margin:-8px 0 24px;max-width:var(--readw)}
+
+  /* spine callout */
+  .spine{border:1px solid var(--border-strong);border-left:3px solid var(--accent);background:var(--surface);border-radius:var(--radius);padding:22px 24px;margin:0 0 30px;max-width:var(--readw)}
+  .spine .q{font-size:clamp(17px,2.3vw,20px);font-weight:700;letter-spacing:-.01em;line-height:1.5;margin:0}
+  .spine p{color:var(--muted);margin:14px 0 0;font-size:14.5px}
+
+  /* toc */
+  .toc{max-width:var(--readw);display:grid;gap:12px}
+  .toc .part{font-family:var(--mono);color:var(--accent-2);font-size:13px;letter-spacing:.02em;margin:16px 0 2px}
+  .toc .part:first-child{margin-top:0}
+  .toc .item{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:15px 18px}
+  .toc .item h4{margin:0;font-size:15.5px;font-weight:600;letter-spacing:-.01em}
+  .toc .item h4 .free{font-family:var(--mono);font-size:11.5px;font-weight:600;color:#0b0f14;background:var(--accent-2);border-radius:6px;padding:2px 7px;margin-left:8px;vertical-align:middle}
+  .toc .item p{margin:7px 0 0;color:var(--muted);font-size:13.5px;line-height:1.6}
+
+  /* maps / tables */
+  .maps{max-width:var(--readw);margin-top:34px}
+  .maps h3{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text);margin:26px 0 12px}
+  .tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:440px}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  thead th{background:var(--surface-2);color:var(--text);font-weight:600;font-family:var(--mono);font-size:12.5px;letter-spacing:.01em}
+  tbody tr:last-child td{border-bottom:none}
+  td{color:var(--muted)}
+  td:first-child{color:var(--text);font-weight:500}
+
+  /* reading / prose */
+  .reading{max-width:var(--readw);margin:0 auto}
+  .chapter-tag{font-family:var(--mono);font-size:13px;color:var(--accent-2);margin:0 0 6px}
+  .prose{color:var(--text);font-size:16.5px;line-height:1.85}
+  .prose h2{font-size:clamp(21px,3vw,26px);font-weight:800;letter-spacing:-.01em;line-height:1.35;margin:52px 0 18px;padding-top:8px;border-top:1px solid var(--border)}
+  .prose h3{font-size:18.5px;font-weight:700;letter-spacing:-.01em;margin:38px 0 14px;color:var(--text)}
+  .prose p{margin:18px 0}
+  .prose strong{font-weight:700;color:#fff}
+  .prose a{color:var(--accent);border-bottom:1px solid rgba(124,131,255,.4)}
+  .prose a:hover{border-bottom-color:var(--accent)}
+  .prose ul,.prose ol{margin:18px 0;padding-left:1.4em}
+  .prose li{margin:8px 0}
+  .prose blockquote{margin:22px 0;padding:14px 20px;border-left:3px solid var(--accent-2);background:var(--surface);border-radius:0 10px 10px 0;color:var(--text);font-weight:600}
+  .prose blockquote p{margin:0}
+  .prose :not(pre) > code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:#cdd6e4;white-space:nowrap}
+  .prose pre{margin:22px 0;background:#0a0e13;border:1px solid var(--border-strong);border-radius:12px;padding:18px 18px;overflow-x:auto;line-height:1.6}
+  .prose pre code{font-family:var(--mono);font-size:13.5px;color:#dbe4ef;white-space:pre;display:block}
+  /* syntax tokens */
+  code.ts .k{color:#c9a6ff}
+  code.ts .s{color:#7fe3d0}
+  code.ts .c{color:#6b7888;font-style:italic}
+  code.ts .n{color:#f0a97a}
+  code.ts .f{color:#82abe8}
+
+  /* price */
+  .pricecard{max-width:var(--readw);border:1px solid var(--border-strong);background:linear-gradient(180deg,var(--surface-2),var(--surface));border-radius:var(--radius);padding:30px 28px}
+  .pricecard .lab{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.02em}
+  .price{font-size:clamp(40px,8vw,62px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:8px 0 0}
+  .price .yen{font-size:.5em;font-weight:700;margin-left:.1em}
+  .pricecard .oneshot{margin:12px 0 0;color:var(--text);font-weight:600;font-size:15px}
+  .pricecard .fine{margin:8px 0 0;color:var(--faint);font-size:13px}
+
+  /* notify */
+  .notify-block{max-width:var(--readw);margin-top:26px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:24px 26px}
+  .notify-block h3{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .notify-block p.sub{margin:0 0 16px;color:var(--muted);font-size:14px}
+  form.notify{display:flex;gap:10px;flex-wrap:wrap}
+  form.notify input[type=email]{flex:1 1 240px;min-width:0;background:var(--bg);border:1px solid var(--border-strong);border-radius:11px;padding:12px 14px;color:var(--text);font-family:var(--sans);font-size:15px}
+  form.notify input[type=email]::placeholder{color:var(--faint)}
+  form.notify input[type=email]:focus{outline:none;border-color:var(--accent)}
+  .notify-block .formnote{margin:12px 0 0;color:var(--faint);font-size:12.5px}
+
+  footer{border-top:1px solid var(--border);padding:34px 0;color:var(--faint);font-family:var(--mono);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="../../"><b>~</b> skipbit</a>
+    <nav>
+      <a href="#problem">問題</a>
+      <a href="#toc">目次</a>
+      <a href="#chapter">無料先行章</a>
+      <a href="#price">価格</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- hero -->
+  <div class="wrap hero">
+    <p class="kicker">買い切り技術書 — 制作中</p>
+    <h1>AIの緑を疑う<span class="wip">(仮)</span></h1>
+    <p class="subhead">実装・テスト・検証を AI が担うとき、何を「実装から独立した正解」として残すか。</p>
+    <p class="jp">「テストが緑」と「仕様が守られている」は別。緑は、守れている証拠にも、実装をなぞっただけの追認の産物にもなる。その見分け方を、手を動かせる形で置いていく本です。</p>
+    <div class="cta">
+      <a class="btn primary" href="#chapter">無料先行章を読む <span class="arw">→</span></a>
+      <a class="btn" href="#toc">目次を見る <span class="arw">→</span></a>
+      <a class="btn" href="#price">価格 <span class="arw">→</span></a>
+    </div>
+    <div class="pipe">
+      <span class="dot"></span>
+      <b>テストが緑</b> <span class="arw">→</span>
+      <b>それは追認かもしれない</b> <span class="arw">→</span>
+      <b>独立した正解を残す</b> <span class="arw">→</span>
+      <b>verdict + evidence</b>
+    </div>
+  </div>
+
+  <!-- problem -->
+  <section id="problem">
+    <div class="wrap">
+      <h2 class="sh"><span class="k">//</span>なぜこの本か</h2>
+      <div class="reading prose">
+        <p><strong>「テストが緑」と「仕様が守られている」は、同じではありません。</strong>AI に実装を書かせ、テストを書かせ、そして検証まで手伝わせると、必ず一度は見る壊れ方があります。落ちたテストの期待値を実装に合わせて書き換えて緑にする。あるいは、実装を先に読んでから、その挙動をそのまま固定するテストを書いてしまう。どちらもテストは通ります。通りますが、守りたかった一線は守られていません。</p>
+        <p>緑が信用できなくなる原因は、多くの場合ひとつに畳めます。<strong>正解を作る経路と、正解を確かめる経路が、同じ間違いを共有している</strong>——共通原因の故障です。同じ計算・同じ思い込みから期待値を作れば、実装が間違えたところで検証も同じように間違えます。そこに、何も攻めずに通ってしまう vacuous(空虚)な PASS や、実行経路が実は skip しているのに「PASS」とだけ報告される緑が積み重なります。</p>
+        <p>この問いは、以前 Zenn に書いた「<a href="https://zenn.dev/skipbit/articles/2026-07-ai-era-architecture" target="_blank" rel="noopener">AIの時代だからこそアーキテクチャを意識しよう</a>」の最後に、「壊れたら終わりの一線を、どのテストで固定するか——それだけで1本の記事になる深さがある」と書いて踏み込まずに残した宿題でもあります。この本は、その回収です。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- toc -->
+  <section id="toc">
+    <div class="wrap">
+      <h2 class="sh"><span class="k">//</span>本書の問いと目次</h2>
+      <div class="spine">
+        <p class="q">実装・テスト・検証を AI が担うとき、何を「実装から独立した正解」として残すか。</p>
+        <p>各技法(property / オラクル独立 / mutation / model-based / round-trip / differential / 検証の分離とゲート)は、この一つの問いへの答えとして並びます。単なる fast-check 入門ではありません。全体を貫くのは「<b style="color:var(--text)">独立性をどこに置くか</b>」という一つの設計問題です。</p>
+      </div>
+
+      <div class="toc">
+        <div class="part">はじめに</div>
+        <div class="item">
+          <h4>緑なのに壊れている</h4>
+          <p>「テストが通る」と「仕様が守られる」は別。AI が実装を先に読んでテストを書くと "追認" が起きる。本書の問い=何を独立した正解として残すか、を提示する。</p>
+        </div>
+
+        <div class="part">第0章</div>
+        <div class="item">
+          <h4>「独立した正解」とは何か — 独立性をどこに置くか</h4>
+          <p>技法のカタログに入る前に、地図を2枚置く(下記)。以後の技法は「便利なテスト手法」ではなく「正解を実装から独立させる、その置き方の違い」として読める。実装と検証が同じ間違い(共通原因)を共有しないこと——ここに本書の背骨がある。</p>
+        </div>
+
+        <div class="part">第1部 — 正解を「値」で残す</div>
+        <div class="item">
+          <h4>1章 1つの不変条件を値で攻める<span class="free">無料先行章</span></h4>
+          <p>型で守る/値で攻める。守りきれない実行時の一線を property test で固定する(fast-check)。</p>
+        </div>
+        <div class="item">
+          <h4>2章 オラクルを実装から独立させる</h4>
+          <p>追認しにくい property の書き方。実装をなぞった期待値ではなく「関係」で書く。弱める変更が diff に残るようにする。</p>
+        </div>
+        <div class="item">
+          <h4>3章 テストが弱められたことを検出する</h4>
+          <p>vacuous(空虚)な PASS の診断。mutation testing で、テスト自身の検出力を試す。</p>
+        </div>
+
+        <div class="part">第2部 — 状態と変換の正解を残す</div>
+        <div class="item">
+          <h4>4章 状態機械を丸ごと攻める — model-based testing</h4>
+          <p>操作列を生成し「到達不能」を反例探索する(手書きループ → 公式の stateful API)。1章=不変条件1本 / 4章=状態機械全体、と役割を分ける。</p>
+        </div>
+        <div class="item">
+          <h4>5章 往復と対称性</h4>
+          <p>round-trip / metamorphic / differential で、オラクルなしに正解を縛る。</p>
+        </div>
+        <div class="item">
+          <h4>6章 複数の不変条件が干渉するとき</h4>
+          <p>複数の一線が互いに干渉するときの、生成器と property の設計。</p>
+        </div>
+
+        <div class="part">第3部 — AIに検証させる時代の「ゲート」</div>
+        <div class="item">
+          <h4>7章 生成経路と検証経路を独立させる</h4>
+          <p>実装する側と検証する側を分ける。別の目的・文脈・実行経路を通すことが効く(model / context / prompt / execution independence)。</p>
+        </div>
+        <div class="item">
+          <h4>8章 テスト変更を許可する条件とレビューゲート</h4>
+          <p>diff に「何を犠牲にして緑にしたか」を残す。テストを緩める変更と、実装を直す変更を取り違えない。</p>
+        </div>
+        <div class="item">
+          <h4>9章 CIに残す verdict と evidence</h4>
+          <p>silent failover / skip / 握りつぶし / vacuous PASS を検出する。結論(verdict)と根拠(evidence)を分けて残す。</p>
+        </div>
+
+        <div class="part">終章</div>
+        <div class="item">
+          <h4>ケーススタディ</h4>
+          <p>実プロジェクトで「緑を疑う」を回した記録(合成化)。</p>
+        </div>
+
+        <div class="part">付録</div>
+        <div class="item">
+          <h4>実行可能な本文(教材コード・最小構成)</h4>
+          <p>各章のコードが動く最小の例。バグ版で赤・修正版で緑になる実行結果を evidence として同梱する。</p>
+        </div>
+      </div>
+
+      <div class="maps">
+        <h3>地図1: 正解の独立のさせ方</h3>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>正解の作り方</th><th>独立性</th><th>代表例</th></tr></thead>
+            <tbody>
+              <tr><td>実装の出力や同じ計算から期待値を作る</td><td>弱い(追認しやすい)</td><td>実装をなぞった example テスト</td></tr>
+              <tr><td>実装とは別の関係を書く</td><td>中〜強</td><td>property / metamorphic</td></tr>
+              <tr><td>別実装と比較する</td><td>強</td><td>differential</td></tr>
+              <tr><td>簡潔なモデルと比較する</td><td>強</td><td>model-based</td></tr>
+              <tr><td>意図的に壊して検出力を測る</td><td>メタ</td><td>mutation testing</td></tr>
+              <tr><td>制約を実行環境で強制する</td><td>構造</td><td>architecture test / CI gate</td></tr>
+              <tr><td>結論と根拠を分離して残す</td><td>運用</td><td>verdict / evidence</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>地図2: 何から独立させるのか</h3>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>独立対象</th><th>典型的な失敗</th></tr></thead>
+            <tbody>
+              <tr><td>実装から独立</td><td>実装を読んで期待値を書く</td></tr>
+              <tr><td>アルゴリズムから独立</td><td>同じ計算をテスト側でも再実装する</td></tr>
+              <tr><td>生成モデルから独立</td><td>同じ生成器が自己レビューする</td></tr>
+              <tr><td>コンテキストから独立</td><td>実装理由まで読んで追認する</td></tr>
+              <tr><td>実行経路から独立</td><td>test command 自体が skip している</td></tr>
+              <tr><td>verdict から独立</td><td>「PASS」という文字だけを信じる</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- free chapter -->
+  <section id="chapter">
+    <div class="wrap">
+      <h2 class="sh"><span class="k">//</span>無料先行章(全文)</h2>
+      <div class="reading">
+        <p class="chapter-tag mono">第1部 1章</p>
+        <div class="prose">
+
+<p>この章は、買い切りの技術書の無料先行章です。本を買うかどうか決める前に、中身の深さと、借り物でない手触りを確かめてもらうために置いています。</p>
+
+<p>以前 Zenn に「<a href="https://zenn.dev/skipbit/articles/2026-07-ai-era-architecture" target="_blank" rel="noopener">AIの時代だからこそアーキテクチャを意識しよう</a>」という記事を書きました。その最後で、「壊れたら終わりの一線を、どのテストで固定するか」という問いは「それだけで1本の記事になる深さがある」と書いて、踏み込まずに終えました。この章はその回収です。</p>
+
+<p>AIにコードを書かせ、AIにテストを書かせていると、必ず一度は見る壊れ方があります。落ちたテストの期待値を、実装に合わせて書き換えて緑にする。あるいは、AIが実装を先に読んでから、その実装の挙動をそのまま固定するテストを書いてしまう。どちらも、テストは通ります。通りますが、守りたかった一線は守られていません。</p>
+
+<p>この章を読み終えると、あなたは自分のドメインの「絶対に壊れてはいけない1つの不変条件」を、AIが実装をそのまま追認しにくい property test として書けるようになります。「絶対に追認できない」テストはありません——追認するにはテスト側を目に見えて弱めるしかない、という状態に持っていくのがこの章のゴールです。使う道具は <a href="https://fast-check.dev/" target="_blank" rel="noopener">fast-check</a> 一つ、言語は TypeScript です。</p>
+
+<p>この章のコードはすべて合成の最小例です。自分のプロダクト開発で反復して踏んだ失敗の「型」を、注文ドメインという誰にでも通じる題材に翻訳して示します。実際のドメインやログは出しません。他人の匿名化ログは、読者から足場を奪うだけだからです。</p>
+
+<h2>AIが書いたテストが「実装の追認」になる瞬間</h2>
+
+<p>題材はどこにでもある注文です。仕様に、絶対に譲れない一線が1つあるとします。</p>
+
+<blockquote><p>確定した注文の金額は、二度と変わらない。</p></blockquote>
+
+<p>確定前の下書き状態なら明細を足したり消したりできる。しかし一度確定したら、金額は凍結される。会計とも在庫とも突き合わさっている数字なので、確定後に動いたら整合が崩れます。これが「壊れたら終わりの一線」です。</p>
+
+<p>AIに <code>Order</code> を実装させます。返ってきたのはこういうコードでした。</p>
+
+<pre><code class="ts">// order.ts
+export type OrderStatus = "draft" | "confirmed" | "cancelled";
+
+export interface OrderLine {
+  readonly sku: string;
+  readonly quantity: number;
+  readonly unitPrice: number;
+}
+
+export class Order {
+  private _status: OrderStatus = "draft";
+  private readonly _lines: OrderLine[] = [];
+
+  get status(): OrderStatus {
+    return this._status;
+  }
+
+  get total(): number {
+    return this._lines.reduce((sum, l) => sum + l.quantity * l.unitPrice, 0);
+  }
+
+  addLine(line: OrderLine): void {
+    this._lines.push(line); // ← 確定後もガードしていない(これがバグ)
+  }
+
+  confirm(): void {
+    if (this._status !== "draft") {
+      throw new Error(`確定できるのは draft の注文だけです: ${this._status}`);
+    }
+    this._status = "confirmed";
+  }
+
+  cancel(): void {
+    this._status = "cancelled";
+  }
+}</code></pre>
+
+<p><code>confirm()</code> には「draft 以外からは確定できない」というガードが入っています。目に見える正しさはあります。ところが <code>addLine()</code> には status のチェックがありません。確定した後でも明細を足せてしまう。守りたかった一線が、静かに開いています。</p>
+
+<p>続けて、AIに「このクラスのテストを書いて」と頼みます。AIは実装を読んでからテストを書くことが多い。読むと、<code>addLine</code> は status を見ずに明細を積む、と書いてある。だからAIはこういうテストを書きます。</p>
+
+<pre><code class="ts">it("明細を追加すると合計が増える", () => {
+  const order = new Order();
+  order.addLine({ sku: "APL-001", quantity: 2, unitPrice: 500 });
+  order.confirm();
+  order.addLine({ sku: "BRW-014", quantity: 1, unitPrice: 300 }); // 確定後に追加している
+  expect(order.total).toBe(1300); // 実装が返す値をそのまま期待値にした
+});</code></pre>
+
+<p>このテストは通ります。緑です。しかしこのテストは、<strong>確定後に明細を足せてしまうバグを「正しい仕様」として固定しています</strong>。<code>total</code> が 1300 になることを期待している。つまり「確定後も金額は動く」と宣言している。守りたかった一線と正反対のことを、テストが保証してしまいました。</p>
+
+<p>これが追認です。実装が先にあり、テストが後から実装に姿を合わせる。実装が間違っていれば、間違いをそのまま固定したテストができあがります。</p>
+
+<p>追認は、もっと露骨な形でも起きます。あなたが先に正しいテストを書いたとします。</p>
+
+<pre><code class="ts">it("確定後に明細を追加すると拒否される", () => {
+  const order = new Order();
+  order.confirm();
+  expect(() =>
+    order.addLine({ sku: "BRW-014", quantity: 1, unitPrice: 300 }),
+  ).toThrow();
+});</code></pre>
+
+<p>これは落ちます。実装が拒否しないからです。ここで「テストを通して」とAIに頼むと、AIには二つの道があります。実装を直すか、テストを書き換えるか。落ちたテストの期待値を実装に合わせて書き換えるほうが、局所的で安全に見える。<code>toThrow()</code> を消し、<code>expect(order.status).toBe("confirmed")</code> あたりに書き換えれば、テストは緑に戻ります。一線は開いたまま、レビューには「テスト、通りました」とだけ表示されます。</p>
+
+<h2>なぜ example テストだけでは不変条件を守りきれないのか</h2>
+
+<p>いま見た二つの失敗は、どちらも example テスト、つまり「具体的な1ケースを書き下すテスト」で起きています。example テストが悪いわけではありません(この章の後半では、急所を固定するのに example テストを使います)。守りきれなくなるのは、example テスト<strong>だけ</strong>に頼ったときに現れる、次の二つの使い方のときです。</p>
+
+<p>一つ目。<strong>オラクル(正解の判定基準)を実装からコピーしてしまう</strong>。仕様から独立に決めた期待値(たとえば税込は 110 円)なら、それは強いオラクルです。弱いのは、<code>toBe(1300)</code> の 1300 のように、実装が返す値や同じ計算からコピーした期待値のとき。オラクルが実装のコピーになると、実装の間違いはそのままテストに透過します。AI に実装とテストの両方を書かせると、これが起きやすい。</p>
+
+<p>二つ目。example テストは<strong>書いた人が思いついたケースしか踏まない</strong>。「確定 → 追加 → 取消 → もう一度追加」のような操作の並びは、思いつかなければテストされません。不変条件というのは本来、「どんな操作の並びでも」成り立つべき、という全称の主張です。example はそのうちの1つの目撃例にすぎない。目撃していない並びに反例があっても、example テストは何も言いません。</p>
+
+<p>ここを埋めるのが property based testing です。考え方を一つ入れ替えます。</p>
+
+<h2>「型で守る」と「値で攻める」</h2>
+
+<p>不変条件を守る手段は、大きく二つに分かれます。</p>
+
+<p><strong>型で守る</strong>。不正な状態を表現できないようにする。書き換えの入口をメソッドに絞る。コンパイル時にエラーにする。強力ですが、届く範囲に限りがあります。「確定済みかどうか」は実行時の状態です。<code>Order</code> という型は、draft でも confirmed でも同じ <code>Order</code> です。型を見ても、いまこのインスタンスが確定済みかは分からない。<code>ConfirmedOrder</code> という別の型に分ける設計もありますが、状態遷移のあるドメインをすべて型に押し込むのは現実には難しく、既存コードを幽霊型で組み替えるのも割に合わないことが多い。</p>
+
+<p><strong>値で攻める</strong>。禁止したい状態へ「到達しようと試みる」値を大量に生成し、探索した範囲では一度も到達しないことを確かめる。型が届かなかった領域を、値でパトロールする。これが property based testing のやることです。</p>
+
+<p>この章のメンタルモデルは、この一行に畳めます。</p>
+
+<blockquote><p>不変条件は、型で守れる分は型で守る。守りきれない実行時の一線は、値で攻めて守る。</p></blockquote>
+
+<p>「守る」と「攻める」は反対語に見えますが、同じことです。自分のコードに向かって、壊しにいく値を投げ続ける。壊れなければ、その一線は(投げた範囲で)守られている。</p>
+
+<h2>fast-check で不変条件を"値で攻める"(手順)</h2>
+
+<p>ここから手を動かします。順に踏めば、あなたのコードでも同じことができます。</p>
+
+<h3>1. 守る一線を1つに絞る</h3>
+
+<p>まず一線を1つだけ選びます。「確定した注文の金額は二度と変わらない」。関係のない別々の一線を1本のテストに詰め込まない。落ちたときに「どの一線が破れたか」が分かるようにするためです。</p>
+
+<p>ひとつ注意があります。1つの一線でも、突き詰めると複数の不変条件に分かれることがあります。この「金額の凍結」も、2つの主張になります。</p>
+
+<ul>
+<li><strong>不変条件A</strong>: 一度確定した金額は、その後の状態(取消も含む)に関わらず変わらない。</li>
+<li><strong>不変条件B</strong>: draft 以外の注文には、明細を追加できない。</li>
+</ul>
+
+<p>AとBは別の主張です。名前を分けて意識しておくと、落ちたときにどちらが破れたかが分かります。この章では後で1本の property にまとめますが、A と B の assertion は別々に置きます。</p>
+
+<h3>2. ドメインを最小で組む</h3>
+
+<p>守る対象を、DBもフレームワークも介さない最小の形で組みます。さきほどの <code>Order</code> クラスがそれです。property test は何百回も回るので、Docker や外部I/Oに依存させない。純粋なオブジェクトかインメモリのフィクスチャで完結させます。速さは正義で、遅いと numRuns を上げられません。</p>
+
+<h3>3. 状態遷移の不変条件では、arbitrary は「状態」でなく「操作列」を作る</h3>
+
+<p>状態が遷移するドメインの不変条件を攻めるとき、ここが property test でいちばん間違えやすい所です。<strong>生成器(arbitrary)が作るべきは「状態」ではなく、「その状態へ至る操作列」です</strong>。(この指針は状態遷移の不変条件に限った話です。後半で扱う往復のような別種の不変条件では、整合的な「状態」を直接生成してかまいません。)</p>
+
+<p>なぜか。禁止したい状態を直接でっち上げて生成すると、ドメインが本当は到達しない状態までテストしてしまい、偽陽性が出ます。逆に、生成した状態がドメインの整合性を満たしていないと、テストは不変条件ではなく「壊れた入力をドメインが拒否すること」を検査するだけになり、偽陰性になります。どちらも、テストが嘘をつきます。</p>
+
+<p>正しくは、既知の正しい初期状態(空の下書き注文)から始めて、ドメイン自身の操作を並べて生成します。こうすれば、生成されるどの状態も、ドメインが実際に到達しうる状態です。</p>
+
+<pre><code class="ts">import fc from "fast-check";
+import { describe, expect, it } from "vitest";
+import { Order, type OrderLine } from "./order";
+
+// 注文に対して打てる操作。
+type Op =
+  | { readonly kind: "addLine"; readonly line: OrderLine }
+  | { readonly kind: "confirm" }
+  | { readonly kind: "cancel" };
+
+const lineArb: fc.Arbitrary&lt;OrderLine> = fc.record({
+  sku: fc.constantFrom("APL-001", "BRW-014", "CFE-220", "DNM-330"),
+  quantity: fc.integer({ min: 1, max: 10 }),
+  unitPrice: fc.integer({ min: 1, max: 100_000 }),
+});
+
+// 1つの操作の生成器。fc.oneof で「明細追加 / 確定 / 取消」から選ぶ。
+const opArb: fc.Arbitrary&lt;Op> = fc.oneof(
+  lineArb.map((line): Op => ({ kind: "addLine", line })),
+  fc.constant&lt;Op>({ kind: "confirm" }),
+  fc.constant&lt;Op>({ kind: "cancel" }),
+);</code></pre>
+
+<p><code>fc.record</code> はオブジェクトを、<code>fc.integer</code> は範囲つき整数を、<code>fc.constantFrom</code> は候補からの1つを生成します。<code>fc.oneof</code> は複数の生成器から1つを選ぶ。これらを組んで「1操作」の生成器を作り、次のステップで <code>fc.array</code> に包んで「長さ1〜12の操作列」にします。</p>
+
+<p>補足として、生成器を状態に依存させる書き方もあります。「いま edge が1本もない図に deleteEdge を生成しない」といった、その時点の状態で適用可能な操作だけを出す作り方です。今回は操作列を平らに生成し、適用可能かどうかは次の property 側で捌きます。どちらでもよく、ドメインの拒否ロジックが素直なら平らな生成のほうが読めます。</p>
+
+<p>もう一つ補足を。この章では操作列を手書きのループで回します(そのほうが仕組みが見えるため)。ただし実務では、<code>fc.commands</code> によるモデルベース検査という選択肢があります。各操作を「適用条件 <code>check</code> と実行 <code>run</code> を持つコマンド」として定義し、fast-check にコマンド列を組ませて回す、状態遷移テスト用の公式のやり方です。考え方は同じ(初期状態から操作を積む)で、定型化されている。詳しい読者の「なぜ公式の stateful API を使わないのか」という問いには、ここで先回りしておきます——本編で扱います。</p>
+
+<h3>4. property で不変条件を書く</h3>
+
+<p>いよいよ本体です。ステップ1で分けた2つの不変条件を、1本の property で毎ステップ観測します。</p>
+
+<p>不変条件Bを書くには、「追加できない」をコードで表す必要があります。確定・取消後の <code>addLine</code> は、黙って何もしないのではなく、<strong>専用の例外を投げて拒否する</strong>——これを仕様として先に決め、<code>order.ts</code> に置いておきます。</p>
+
+<pre><code class="ts">// order.ts に追加する。実装(addLine)はまだこれを投げない——それが捕まえるバグ。
+export class OrderFrozenError extends Error {
+  constructor(status: OrderStatus) {
+    super(`確定・取消後の注文には明細を追加できません: ${status}`);
+    this.name = "OrderFrozenError";
+  }
+}</code></pre>
+
+<p>型を先に置くだけで、実装はまだ何も変えていません。<code>addLine</code> は相変わらず status を見ずに積む。その食い違いが、これから property で捕まえるバグです。</p>
+
+<p>property はこうなります。<code>import { Order, OrderFrozenError } from "./order";</code> を足して、長さ1〜12の操作列を回します。</p>
+
+<pre><code class="ts">describe("不変条件: 確定後の追加は拒否され、確定金額は不変", () => {
+  it("property: 確定後の明細追加は拒否され、確定金額は不変", () => {
+    fc.assert(
+      fc.property(fc.array(opArb, { minLength: 1, maxLength: 12 }), (ops) => {
+        const order = new Order();
+        let confirmedTotal: number | null = null;
+
+        for (const op of ops) {
+          switch (op.kind) {
+            case "addLine":
+              if (order.status === "draft") {
+                order.addLine(op.line);
+              } else {
+                // 確定/取消後の追加は「攻め」。拒否され、かつ total が動かないこと。
+                const before = order.total;
+                expect(() => order.addLine(op.line)).toThrow(OrderFrozenError); // 不変条件B
+                expect(order.total).toBe(before);
+              }
+              break;
+            case "confirm":
+              if (order.status === "draft") {
+                order.confirm();
+                confirmedTotal = order.total; // 確定した瞬間の金額を記録する
+              }
+              break;
+            case "cancel":
+              order.cancel();
+              break;
+          }
+          // 一度でも確定したら、その後の状態に関わらず total は記録値から動いてはならない。
+          if (confirmedTotal !== null) {
+            expect(order.total).toBe(confirmedTotal); // 不変条件A
+          }
+        }
+      }),
+      { numRuns: 300 },
+    );
+  });
+});</code></pre>
+
+<p>このコードの効きどころを4つ挙げます。</p>
+
+<p><strong>オラクルを実装のコピーにしていない</strong>。<code>toBe(1300)</code> のような、人が計算した固定値を書いていません。不変条件Aの判定基準は <code>confirmedTotal</code>、つまり「確定した瞬間に実装自身が出した値」です。その後どんな操作を打とうと、この値から動かないこと、という<strong>関係</strong>だけを主張しています。AIがこの property を追認しようとしても、書き換えられる魔法の数字がありません。追認するには判定ロジックを目に見えて弱めるしかなく、それはレビューに映ります。</p>
+
+<p><strong>攻めを避けずに、拒否されることを主張する</strong>。確定後の <code>addLine</code> を property 側で避けたりはしません。むしろ、わざと呼びます。呼んで、<code>toThrow(OrderFrozenError)</code> で「拒否されること」を確かめ、さらに <code>total</code> が呼ぶ前(<code>before</code>)から動いていないことまで見る。これが不変条件Bです。一方 <code>confirm</code> は <code>if (order.status === "draft")</code> の内側でだけ呼びます。確定済みに <code>confirm()</code> すると別の例外で落ちる実装で、そこは守りたい一線ではないからです。ステップ3の「到達しうる状態だけをたどる」を、攻めるべき所は攻め、そうでない所は避ける、と使い分けています。</p>
+
+<p><strong>「二度と変わらない」を状態で絞らない</strong>。不変条件Aの判定を <code>if (confirmedTotal !== null)</code> にしているのは意図的です。ここに <code>&amp;&amp; order.status === "confirmed"</code> を足したくなりますが、そうすると <strong>confirm → cancel → addLine の並びが素通り</strong>します(取消後は判定が飛ぶため)。「二度と変わらない」は、確定後どんな状態になっても——取り消されても——金額が動かないことを含みます。だから状態を問わず、一度でも確定していれば毎回見ます。</p>
+
+<p><strong>毎ステップ観測している</strong>。不変条件Aをループの最後で確認しています。「操作列を全部流し終えてから最後に1回」ではなく、1操作打つごとに見る。確定した直後に破れる場合も、5操作後に破れる場合も、破れた瞬間に捕まえます。</p>
+
+<p><code>numRuns</code> は、fast-check が探索する操作列の本数です。既定は 100。ここでは 300 にしています。多く探索するほど珍しい並びに当たる確率が上がりますが、そのぶん時間がかかる。速い純ドメインなら数百から数千まで上げられます。CIで回すなら、遅いテストにしないことと引き換えです。</p>
+
+<h3>5. 走らせて、壊す</h3>
+
+<p>この property を、さきほどのバグ入り <code>Order</code>(<code>addLine</code> が status を見ずに積む実装)に対して走らせます。落ちます。fast-check は落ちたときに、ただ「失敗」と言うだけではありません。反例を<strong>縮小(shrink)</strong>して、いちばん小さい失敗ケースを提示します。出力はこうなります。</p>
+
+<pre><code class="txt">Property failed after 1 tests
+{ seed: ..., path: "...", endOnFailure: true }
+Counterexample: [[{"kind":"confirm"},{"kind":"addLine","line":{"sku":"APL-001","quantity":1,"unitPrice":1}}]]
+Shrunk 5 time(s)
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run
+Caused by: AssertionError: expected function to throw an error, but it didn't</code></pre>
+
+<p>反例は「空の下書きを確定して、そのあと明細を1つ足そうとした」という2操作です。実装は拒否せず黙って明細を積んでしまうので、<code>expect(() => order.addLine(...)).toThrow(...)</code> が「投げるはずが投げなかった」で落ちます。正直に言えば、この最小例<strong>だけ</strong>なら、さきほどの example を1本書けば人間でも捕まえられます。property based testing が本当に効いてくるのは、ここから先——状態と操作の組み合わせが増え、「確定 → 取消 → 復元 → 編集 → …」のように、どの並びを試すべきかを人間が列挙しきれなくなってからです(本編の状態機械で扱います)。それでも、この小さな例で shrink の効きは見えます。<code>quantity</code> も <code>unitPrice</code> も生成範囲の下限 1 まで縮んだ最小形で返ってくる。<strong>機械が見つけた反例を、原因が読める最小形まで削って返す</strong>——組み合わせが増えるほど、この価値は大きくなります。</p>
+
+<p><code>seed</code> と <code>path</code> は実行ごとに変わる値なので伏せています。手元では、出力された seed をそのまま <code>fc.assert(..., { seed, path })</code> に渡せば、同じ反例に一発で戻れます。</p>
+
+<h2>緑にする2つの道 — 追認か、修正か</h2>
+
+<p>反例が出ました。ここが分岐点です。冒頭で書いた「落ちたテストを実装に合わせて書き換えて通す」の誘惑が、property test でも顔を出します。</p>
+
+<p><strong>追認の道</strong>。property を弱める。else 側の <code>expect(() => order.addLine(op.line)).toThrow(OrderFrozenError)</code> を消す、あるいは確定後は <code>addLine</code> を呼ばないよう property 側で避ける。不変条件Aの判定を状態で絞って確定後を見ないようにするのも、同じ穴です。どれもテストは緑に戻り、一線は開いたままです。property test は example テストより追認しにくいだけで、追認できないわけではありません。<strong>property は「仕様をレビュアーの言葉で書いた宣言」であって、実装に合わせて書き換える対象ではない</strong>。落ちたら、まず疑うのは実装です。</p>
+
+<p><strong>修正の道</strong>。実装を直します。§4で仕様として置いた <code>OrderFrozenError</code> を、<code>addLine</code> が実際に投げるようにする。ガードは3行です。</p>
+
+<pre><code class="ts">// Order クラスの addLine
+addLine(line: OrderLine): void {
+  if (this._status !== "draft") {
+    throw new OrderFrozenError(this._status);
+  }
+  this._lines.push(line);
+}</code></pre>
+
+<p>これで property は緑になります。ここが大事です。<strong>同じ property が、テストを一文字も緩めずに、実装を直しただけで赤から緑に変わった</strong>。追認の道でも緑にはできますが、そのときは diff にテストの変更が残る。実装を直したのか、テストを緩めたのか、diff が証言します。AIが緑を報告してきたら、緑そのものではなく「何を犠牲にして緑にしたのか」を diff で問えます。</p>
+
+<h2>テストを強くする — vacuous な成功を避ける</h2>
+
+<p>実装を直したら property は通ります。ただし、通る property には静かな落とし穴があります。<strong>vacuous(空虚)な成功</strong>です。</p>
+
+<p>いまの property は、確定後の <code>addLine</code> で不変条件Bを、確定後の各ステップで不変条件Aを見ています。もし生成される操作列が、たまたまほとんど「確定後の addLine」を含まなかったら、攻めの assertion にほとんど入りません。property は「攻めるべきことを一度も攻めずに」通る。緑なのに、何も守っていない。</p>
+
+<p>これは仮説ではなく、property test で最もよく踏む静かな失敗です。だから「通った」だけでは足りません。まず、<strong>どれだけ攻めているかを診断</strong>します。fast-check には <code>fc.statistics</code> があり、生成物の分布を出力してくれます。</p>
+
+<pre><code class="ts">// 操作列が「確定後に addLine を試みる」瞬間を含むか判定する(観測用の純関数)。
+// ※ 一度確定したら、その後の addLine は取消後であっても「攻め」として数える
+//   (confirm → cancel → addLine も攻めに含める。確定金額不変が主役だから)。
+function attacksAfterConfirm(ops: readonly Op[]): boolean {
+  let confirmed = false;
+  for (const op of ops) {
+    if (op.kind === "confirm") confirmed = true;
+    else if (op.kind === "addLine" &amp;&amp; confirmed) return true;
+  }
+  return false;
+}
+
+it("観測: 生成された操作列のうち、確定後に addLine を攻めた割合を測る", () => {
+  fc.statistics(
+    fc.array(opArb, { minLength: 1, maxLength: 12 }),
+    (ops) => (attacksAfterConfirm(ops) ? "確定後にaddLineを攻めた" : "攻めていない"),
+    { numRuns: 1000 },
+  );
+});</code></pre>
+
+<p>これは合否を出さず、こういう分布を印字します。</p>
+
+<pre><code class="txt">確定後にaddLineを攻めた......56.90%
+攻めていない.............43.10%</code></pre>
+
+<p>半分強が、確定後の addLine を含んでいる。生成器が偏っていないことは、これで分かります。もし数%しか攻めていなかったら、生成器の重みを変える(<code>fc.oneof</code> の重みづけで <code>confirm</code> と <code>addLine</code> を厚くする)か、操作列の長さを伸ばす。</p>
+
+<p>ただし、ここに落とし穴の二段目があります。<strong><code>fc.statistics</code> は「別に生成した分布」を見せているだけで、さっきの property 本体が攻めのケースを踏んだ保証にはなりません</strong>。statistics は診断であって、property の中身を担保する仕組みではない。分布が健全でも、たまたま property の 300 本に攻めが薄い、という可能性はゼロにはなりません。</p>
+
+<p>だから、<strong>最低限の攻撃経路は example test で決め打ちして固定します</strong>。生成器の重みがどう転んでも、この経路だけは必ず踏む、という保険です。property(広く探索)と example(急所を確実に踏む)は役割が違うので、両方置きます。</p>
+
+<pre><code class="ts">it("確定 → 追加 は拒否され、total は 0 のまま", () => {
+  const order = new Order();
+  order.confirm();
+  const before = order.total;
+  expect(() =>
+    order.addLine({ sku: "APL-001", quantity: 1, unitPrice: 1 }),
+  ).toThrow(OrderFrozenError);
+  expect(order.total).toBe(before);
+});
+
+it("追加 → 確定 → 追加 は拒否され、確定金額は不変", () => {
+  const order = new Order();
+  order.addLine({ sku: "APL-001", quantity: 2, unitPrice: 500 });
+  order.confirm();
+  const confirmed = order.total; // 1000
+  expect(() =>
+    order.addLine({ sku: "BRW-014", quantity: 1, unitPrice: 300 }),
+  ).toThrow(OrderFrozenError);
+  expect(order.total).toBe(confirmed);
+});
+
+it("確定 → 取消 → 追加 でも確定金額は動かない(confirm→cancel→addLine の抜け道)", () => {
+  const order = new Order();
+  order.addLine({ sku: "APL-001", quantity: 1, unitPrice: 1000 });
+  order.confirm();
+  const confirmed = order.total; // 1000
+  order.cancel();
+  expect(() =>
+    order.addLine({ sku: "BRW-014", quantity: 1, unitPrice: 300 }),
+  ).toThrow(OrderFrozenError);
+  expect(order.total).toBe(confirmed);
+});</code></pre>
+
+<p>3本目が、さきほど不変条件Aの判定を <code>if (confirmedTotal !== null)</code> にした理由そのものです。確定して、取り消して、それから追加する。この並びでも確定金額は動いてはならない。property は多数の操作列を探索して禁止状態への経路を見つけられないことを確かめ、example はこういう「言葉にできる急所」を確実に踏む。緑を信じる前に、緑が何を踏んだかを、診断(statistics)と固定(example)の両輪で確かめます。</p>
+
+<h2>もう一つの形: 往復(round-trip)で追認を殺す</h2>
+
+<p>不変条件は状態遷移だけではありません。もう一つ、property が強い定番の形が<strong>往復(round-trip)</strong>です。「直列化して復元すると元に戻る」「取り消して再実行すると元に戻る」。往復が成り立つべき所は、たいてい壊れたら終わりの一線です。保存したファイルが読み込むと欠ける、Undo すると元に戻らない、といった壊れ方は、静かに進行してユーザーのデータを削っていきます。</p>
+
+<p>この節は往復 property の"形"を示す<strong>概念例</strong>です。以下に出す <code>orderArb</code> / <code>serialize</code> / <code>parse</code> の実装は本章では省き、パターンだけを見せます(手元で動かせる完成コードは、前節までの操作列 property です)。</p>
+
+<p>そして往復こそ、AIの追認が最も効きやすい場所です。AIがシリアライザを書き、パーサを書く。パーサが1つのフィールドを黙って落としていても、example テストがそのフィールドを設定していなければ、テストは通ります。人が思いつく example は、たいてい全フィールドを埋めません。</p>
+
+<pre><code class="ts">// 往復不変条件: parse(serialize(order)) は元の order と等価。
+it("property: 直列化して復元すると、元の注文に一致する", () => {
+  fc.assert(
+    fc.property(orderArb, (order) => {
+      const restored = parse(serialize(order));
+      expect(restored).toEqual(order);
+    }),
+  );
+});</code></pre>
+
+<p>ここでも鍵は生成器です。<code>orderArb</code> は、<strong>全フィールドを埋めた、整合性の取れた注文</strong>を生成しなければなりません。フィールドを埋めない生成器は、パーサがそのフィールドを落としていても気づけない。逆に、参照の壊れた注文(存在しない明細を指す等)を生成すると、往復ではなく「壊れた入力をどう扱うか」を測ってしまう。生成器が「妥当な値」を作れているかどうかに、この property の価値が丸ごと乗っています。</p>
+
+<p>ステップ3では「状態遷移の不変条件では、状態でなく操作列を生成せよ」と述べました。往復はこれと矛盾しません。往復が見るのは状態遷移ではなく「符号化と復号の対称性」で、こちらでは整合的な「状態」そのものを直接生成してよい。共通するのは一点だけ——生成する値は、ドメインが本当に取りうる妥当な値でなければならない、ということです。状態遷移では「操作列でしか妥当な状態に到達できない」から操作列を作り、往復では「妥当な状態を直接組める」から状態を作る。目的は同じで、手段が違うだけです。</p>
+
+<p>前後の空白を保ったラベルが往復で削れる、空値と未設定が復元後に取り違わる、といった細部の欠けは、<code>toEqual</code> の全等価と、細部まで揺らす生成器の組み合わせでしか捕まりません。往復の property は、その細部を人手のオラクルなしに固定します。</p>
+
+<h2>この章で持ち帰るもの</h2>
+
+<p>手順(そのまま自分のコードに移せます):</p>
+
+<ol>
+<li>守る一線を1つ選ぶ。一線が複数の不変条件に分かれるなら(ここでは「金額不変」と「追加拒否」)、それぞれを別々の assertion として名前で分ける。</li>
+<li>DBもI/Oも介さない最小ドメインで組む。</li>
+<li>状態遷移の不変条件では、生成器は「状態」でなく「操作列」を作る。初期状態からドメインの操作で到達させ、整合性を保つ(往復のような別種の不変条件では、妥当な状態を直接生成してよい)。</li>
+<li><code>fc.assert(fc.property(...))</code> で、さまざまな長さ(ここでは 1〜12)の操作列を回し、不変条件を毎ステップ観測する。オラクルに実装のコピー(固定の期待値)を使わず、関係で書く。禁止した操作は避けずに、拒否されること自体を assertion にする。</li>
+<li>落ちたら、shrink された最小反例を読む。緑にするときは、実装を直す道とテストを緩める道を取り違えない(diff が証言する)。</li>
+<li>通ったら <code>fc.statistics</code> で「実際に攻めた割合」を診断し、最低限の攻撃経路は example test で固定して vacuous な成功を防ぐ。</li>
+</ol>
+
+<p>メンタルモデル(別のドメインにも当てはまります):</p>
+
+<blockquote><p>不変条件は、型で守れる分は型で守る。型が届かない実行時の一線は、値で攻めて守る。</p></blockquote>
+
+<p>「型で守る」は不正な状態を表現できなくする方向、「値で攻める」は禁止した状態へ到達しようと試み、探索した範囲で一度も届かないことを確かめる方向です。この二つは反対ではなく、担当する領域が違うだけです。property test は、型が届かない領域のパトロールです。</p>
+
+<h2>この先(本編)へ</h2>
+
+<p>この章では、一線を1つに絞って、それを property で固定しました。現場の難しさはここから先にあります。壊れたら終わりの一線が複数あり、互いに干渉するとき、生成器と property をどう組むか。そして、AIにコードもテストも書かせ、AIに検証まで手伝わせて、<strong>全部 PASS が返ってきたとき、その緑をどう疑うか</strong>。緑は、守れている証拠にも、追認の産物にもなります。この見分けを、本編で扱います。</p>
+
+<p>まずはこの章の手順を、あなたのドメインの「絶対に壊れてはいけない1つ」に当ててみてください。守る一線を1つ選んで、そこへ至る操作列を生成し、値で攻める。緑になったら、その緑の中身を <code>fc.statistics</code> で測る。それだけで、AIが書いたテストの緑に、一段の疑いを持てるようになります。</p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- price -->
+  <section id="price">
+    <div class="wrap">
+      <h2 class="sh"><span class="k">//</span>この続きを本で読む</h2>
+      <p>先行章はここまでです。第2章以降では、property 自体のオラクルをどう実装から独立させるか、mutation testing でテスト自身の検出力を測る方法、model-based testing、生成経路と検証経路の分離、CI に残す verdict と evidence まで進みます。</p>
+      <div class="pricecard">
+        <div class="lab">予定価格(税込)</div>
+        <div class="price">3,980<span class="yen">円</span></div>
+        <p class="oneshot">買い切り。1回の支払いで全編。サブスクではありません。</p>
+      </div>
+
+      <div class="notify-block" id="notify">
+        <h3>3,980円なら購入を検討したい</h3>
+        <p class="sub">完成したら一度だけお知らせします。登録しても購入義務はありません。</p>
+        <form class="notify embeddable-buttondown-form" action="https://buttondown.com/api/emails/embed-subscribe/skipbit" method="post" target="_blank">
+          <input type="email" name="email" placeholder="you@example.com" aria-label="メールアドレス" autocomplete="email" required>
+          <button class="btn primary" type="submit">発売時に検討する <span class="arw">→</span></button>
+        </form>
+        <p class="formnote">登録後、確認メールが届きます。<a href="https://buttondown.com/refer/skipbit" target="_blank" rel="noopener">Powered by Buttondown</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>skipbit</span>
+  <span>Software products, engineered from architecture to release.</span>
+</footer>
+
+<script>
+(function(){
+  var KW = "import export from const let var type interface class extends implements private public protected readonly static get set return new delete for while do of in switch case break continue if else throw try catch finally function null undefined void number string boolean unknown any never this super true false as typeof instanceof default async await yield".split(" ");
+  var BI = "fc describe it expect console beforeEach afterEach".split(" ");
+  var kw = {}, bi = {};
+  for(var a=0;a<KW.length;a++) kw[KW[a]]=1;
+  for(var b=0;b<BI.length;b++) bi[BI[b]]=1;
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  var RE = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b\d[\d_]*(?:\.\d+)?\b)|([A-Za-z_$][A-Za-z0-9_$]*)/g;
+  function hl(code){
+    var out = "", last = 0, m;
+    RE.lastIndex = 0;
+    while((m = RE.exec(code))){
+      out += esc(code.slice(last, m.index));
+      if(m[1]) out += '<span class="c">' + esc(m[1]) + '</span>';
+      else if(m[2]) out += '<span class="s">' + esc(m[2]) + '</span>';
+      else if(m[3]) out += '<span class="n">' + esc(m[3]) + '</span>';
+      else {
+        var w = m[4];
+        if(kw[w]) out += '<span class="k">' + w + '</span>';
+        else if(bi[w]) out += '<span class="f">' + w + '</span>';
+        else out += esc(w);
+      }
+      last = RE.lastIndex;
+    }
+    out += esc(code.slice(last));
+    return out;
+  }
+  var nodes = document.querySelectorAll("code.ts");
+  for(var i=0;i<nodes.length;i++){ nodes[i].innerHTML = hl(nodes[i].textContent); }
+})();
+</script>
+
+<!-- Wishlist フォーム送信を計測イベント化 -->
+<script>
+(function(){
+  var f = document.querySelector('.embeddable-buttondown-form');
+  if(f) f.addEventListener('submit', function(){ gtag('event','wishlist_submit',{book:'ai_green'}); });
+})();
+</script>
+
+</body>
+</html>

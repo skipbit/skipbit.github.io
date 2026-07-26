@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0b0f14"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#7c83ff"/>
+  <text x="64" y="80" font-family="Noto Sans CJK JP, sans-serif" font-size="26" font-weight="500" fill="#6b7888" letter-spacing="2">~ skipbit</text>
+  <g font-family="Noto Sans CJK JP, sans-serif" text-anchor="middle" font-weight="700">
+    <text x="600" y="212" font-size="68" fill="#e7edf4">テストが<tspan fill="#34d6c0">緑</tspan></text>
+    <text x="600" y="358" font-size="132" fill="#7c83ff">&#8800;</text>
+    <text x="600" y="460" font-size="68" fill="#e7edf4">仕様が守られている</text>
+  </g>
+  <text x="600" y="546" font-family="Noto Sans CJK JP, sans-serif" text-anchor="middle" font-size="27" font-weight="400" fill="#94a3b4">実装・テスト・検証を AI が担う時代の「独立した正解」の残し方</text>
+  <text x="1136" y="596" font-family="Noto Sans CJK JP, sans-serif" text-anchor="end" font-size="28" font-weight="500" fill="#34d6c0">AIの緑を疑う</text>
+</svg>

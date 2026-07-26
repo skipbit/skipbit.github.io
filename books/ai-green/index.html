@@ -136,8 +136,8 @@
   .prose li{margin:8px 0}
   .prose blockquote{margin:22px 0;padding:14px 20px;border-left:3px solid var(--accent-2);background:var(--surface);border-radius:0 10px 10px 0;color:var(--text);font-weight:600}
   .prose blockquote p{margin:0}
-  .prose :not(pre) > code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:#cdd6e4;white-space:nowrap}
-  .prose pre{margin:22px 0;background:#0a0e13;border:1px solid var(--border-strong);border-radius:12px;padding:18px 18px;overflow-x:auto;line-height:1.6}
+  .prose :not(pre) > code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:#cdd6e4;overflow-wrap:anywhere}
+  .prose pre{margin:22px 0;background:#0a0e13;border:1px solid var(--border-strong);border-radius:12px;padding:18px 18px;overflow-x:auto;max-width:100%;line-height:1.6}
   .prose pre code{font-family:var(--mono);font-size:13.5px;color:#dbe4ef;white-space:pre;display:block}
   /* syntax tokens */
   code.ts .k{color:#c9a6ff}

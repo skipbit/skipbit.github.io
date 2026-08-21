@@ -101,6 +101,15 @@
   .prod .name .arw{color:var(--faint);transition:.18s}
   .prod:hover .name .arw{color:var(--accent)}
   .prod .desc{color:var(--muted);font-size:14.5px;margin-top:3px}
+  .prod.feature{flex-direction:column;align-items:stretch;padding:22px 22px 19px}
+  .prod.feature:hover{border-color:var(--border-strong);background:var(--surface)}
+  .prod.feature .name{display:inline-block}
+  .prod.feature .name:hover .arw{color:var(--accent)}
+  .prod.feature .desc{margin-top:9px;max-width:76ch}
+  .tmpls{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+  .tmpls a{font-family:var(--mono);font-size:13.5px;border:1px solid var(--border);border-radius:10px;padding:8px 13px;color:var(--muted);transition:.16s}
+  .tmpls a:hover{color:var(--text);border-color:var(--accent);background:var(--surface-2)}
+  .tmpls a span{color:var(--accent-2)}
 
   /* contact */
   .links{display:flex;flex-wrap:wrap;gap:12px}
@@ -177,6 +186,17 @@
     <div class="wrap">
       <h2 class="sh"><span class="k">//</span>Products / Labs</h2>
       <div class="grid" style="gap:12px">
+        <div class="prod feature">
+          <div>
+            <a class="name" href="https://github.com/skipbit/cpp-boilerplate">cpp-boilerplate <span class="arw">↗</span></a>
+            <div class="desc">Starting points for C++23 projects, so that the first day is spent on the problem rather than on CMake. Warnings, sanitizers, static analysis, tests, install and packaging are wired in from the first commit.</div>
+            <div class="tmpls">
+              <a href="https://github.com/skipbit/cpp-boilerplate-lib">Library <span>↗</span></a>
+              <a href="https://github.com/skipbit/cpp-boilerplate-cli">CLI <span>↗</span></a>
+              <a href="https://github.com/skipbit/cpp-boilerplate-daemon">Daemon <span>↗</span></a>
+            </div>
+          </div>
+        </div>
         <a class="prod" href="https://github.com/skipbit/scrap">
           <div>
             <div class="name">scrap <span class="arw">↗</span></div>
